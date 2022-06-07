@@ -2,6 +2,31 @@
 #include "CommonActions.h"
 #include "Bridge.h"
 
+QColor CallStackView::getCellColor(int r, int c) override
+{
+	//Pretty sure that some of the col* constants aren't  valid
+	if(c == ColParty || c == ColPath)
+	{
+		if(DbgFunctions()->ModGetParty(getCellUserdata(r, ColBase)) != mod_system)
+			return mSymbolUserTextColor;
+		else
+			return mSymbolSystemTextColor;
+	}
+	if(c != ColModule && c != ColStatus)
+		return mTextColor;
+	switch(getStatus(r))
+	{
+	default:
+	//random colors atm
+	case mod_user:
+		return mSymbolLoadedTextColor;
+	case mod_system:
+		return mSymbolLoadingTextColor;
+	default:
+		return mSymbolUnloadedTextColor;
+	}
+}
+
 CallStackView::CallStackView(StdTable* parent) : StdTable(parent)
 {
     int charwidth = getCharWidth();
